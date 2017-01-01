@@ -13,10 +13,7 @@ wsrep_cluster_name = "{{ galera_cluster_name }}"
 wsrep_sst_method = rsync
 wsrep_node_name = "{{ inventory_hostname }}"
 
-
-{% if galera_bootstrap %}
-wsrep_cluster_address = gcomm://
-{% else %}
+# cluster address
 wsrep_cluster_address = gcomm://{%- for host in groups[galera_cluster_name] -%}
 {%- if hostvars[host]['galera_node_ip'] is defined -%}
 {{ hostvars[host]['galera_node_ip']|trim }}
@@ -24,9 +21,9 @@ wsrep_cluster_address = gcomm://{%- for host in groups[galera_cluster_name] -%}
 {{ hostvars[host]['ansible_eth0']['ipv4']['address']|trim }}
 {%- endif -%}
 {%- if not loop.last  -%},{%- endif -%}
-{%- endfor -%}
-{% endif %}
+{%- endfor %}
 
+# node address
 wsrep_node_address = {% if hostvars[inventory_hostname]['galera_node_ip'] is defined -%}
 {{ hostvars[inventory_hostname]['galera_node_ip'] }}
 {%- else %}
